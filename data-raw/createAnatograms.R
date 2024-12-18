@@ -12,7 +12,7 @@ extractCoords <- function(coords, name, transMatrix) {
 
     c[[1]] <- c[[1]][grep("[[:alpha:]]", c[[1]], invert=TRUE)]
 
-    anatCoord <- as.data.frame(lapply( c, function(u) 
+    anatCoord <- as.data.frame(lapply( c, function(u)
         matrix(as.numeric(unlist(strsplit(u, ","))),ncol=2,byrow=TRUE) ))
     anatCoord$X2[is.na(anatCoord$X1)] <- NA
     anatCoord$X1[is.na(anatCoord$X2)] <- NA
@@ -21,7 +21,7 @@ extractCoords <- function(coords, name, transMatrix) {
     if (length(transMatrix[grep('matrix', transMatrix)])>0) {
         transForm <- gsub('matrix\\(|\\)', '', transMatrix)
         transForm <- as.numeric(strsplit(transForm, ",")[[1]])
-       
+
         anatCoord$x <-  (anatCoord$X1* transForm[1]) + (anatCoord$X1* transForm[3]) + transForm[5]
         anatCoord$y <-  (anatCoord$X2* transForm[2]) + (anatCoord$X2* transForm[4]) + transForm[6]
     } else if (grep('translate', transMatrix)) {
@@ -58,7 +58,7 @@ extractCoords <- function(coords, name, transMatrix) {
         if (j < length(which(is.na(anatCoord$y)))) {
             lastVal <- curVal + 1
         } else if (j == length(which(is.na(anatCoord$y))) ) {
-            anatCoord[c(curVal:length(anatCoord$y)),]$group <- paste0(i, '_',j+1) 
+            anatCoord[c(curVal:length(anatCoord$y)),]$group <- paste0(i, '_',j+1)
         }
     }
 
@@ -71,7 +71,7 @@ extractCoords <- function(coords, name, transMatrix) {
 ####
 #Male Human
 ####
-hsMale <- read.table('homo_sapiens.male_coords.tsv', sep='\t', stringsAsFactors=F)
+hsMale <- read.table('./data-raw/homo_sapiens.male_coords.tsv', sep='\t', stringsAsFactors=F)
 hgMale_list <- list()
 for (i in 1:nrow(hsMale)) {
     df <- extractCoords(hsMale$V2[i], hsMale$V1[i],  hsMale$V3[i])
@@ -113,7 +113,7 @@ names(hgMale_list) <- gsub(' ', '_', names(hgMale_list) )
 
 
 
-allAnatomy <- read.table('allOrgans.tsv', sep='\t', stringsAsFactors=F)
+allAnatomy <- read.table('./data-raw/allOrgans.tsv', sep='\t', stringsAsFactors=F)
 organColour <- data.frame(type = c('circulation', 'nerve', 'digestion', 'respiratory','other', 'reproductive'),
                             colour = c('red', 'purple', 'orange', 'steelblue',  '#41ab5d', '#d95f02'), stringsAsFactors=F)
 allAnatomy$colour <- organColour[match(allAnatomy$V2, organColour$type),]$colour
@@ -130,7 +130,7 @@ hgMale_key$value <- runif(nrow(hgMale_key), 0, 20)
 #####
 #Female human
 #####
-hsFemale <- read.table('homo_sapiens.female_coords.tsv', sep='\t', stringsAsFactors=F)
+hsFemale <- read.table('./data-raw/homo_sapiens.female_coords.tsv', sep='\t', stringsAsFactors=F)
 hgFemale_list <- list()
 for (i in 1:nrow(hsFemale)) {
     df <- extractCoords(hsFemale$V2[i], hsFemale$V1[i],  hsFemale$V3[i])
@@ -143,12 +143,12 @@ hgFemale_list[['fallopian_tube-96']]$y <- hgFemale_list[['fallopian_tube-96']]$y
 hgFemale_list[['fallopian_tube-96']]$x <- hgFemale_list[['fallopian_tube-96']]$x  + 4.7
 
 #####
-#TODO OVARY 
+#TODO OVARY
 #####
 
 fall<- do.call(rbind, hgFemale_list[grep('fallopian_tube|uterus', names(hgFemale_list))])
 plot(fall$x, fall$y, ylim=c(80, 99))
-lines(fall$x, fall$y)  
+lines(fall$x, fall$y)
 DrawEllipse(x=46.9, y=91, radius.x=1, radius.y=0.6, rot=20, col='red')
 DrawEllipse(x=58.5, y=91, radius.x=1, radius.y=0.6, rot=2, col='red')
 DrawEllipse(x=48.6, y=90.5, radius.x=0.1, radius.y=1.2, rot=20, col='red')
@@ -185,7 +185,7 @@ DrawEllipse(x=56.8, y=90.5, radius.x=0.1, radius.y=1.2, rot=2, col='red')
                 group = 'overy22',
                 stringsAsFactors = F)
 
-fall<- do.call(rbind, hgFemale_list[grep('path3584', names(hgFemale_list))])
+fall<- do.call(rbind, hgFemale_list[grep('path3624', names(hgFemale_list))])
 plot(fall$x, fall$y)
 breast1 <- DrawEllipse(x=43.5, y=47, radius.x=6, radius.y=5, col='red')
 breast1 <- data.frame(x = breast1$x, y = breast1$y)
@@ -244,19 +244,19 @@ for ( i in grep("salivary_gland", names(hgFemale_list))) {
     hgFemale_list[[i]]$y <-  hgFemale_list[[i]]$y + 46
 }
 #plot(fall$x, fall$y, cex=0.2, ylim=c(-20, 200))
-#lines(salvGland$x+4.4, salvGland$y+46, col='red') 
+#lines(salvGland$x+4.4, salvGland$y+46, col='red')
 
 ####
 #Collapse all paths into an outline and group
 ####
-for (i in 1:length(hgFemale_list[grep('path3584', names(hgFemale_list))])) {
-    hgFemale_list[grep('path3584', names(hgFemale_list))][[i]]$group <- i 
+for (i in 1:length(hgFemale_list[grep('path3624', names(hgFemale_list))])) {
+    hgFemale_list[grep('path3624', names(hgFemale_list))][[i]]$group <- i
 }
 
-#femSkin <- hgFemale_list[['skin']] 
+#femSkin <- hgFemale_list[['skin']]
 #femSkin <- femSkin[complete.cases(femSkin),]
 #femSkin$group <- 20
-hgFemale_list[['outline']] <- do.call(rbind, hgFemale_list[grep('path3584', names(hgFemale_list))])
+hgFemale_list[['outline']] <- do.call(rbind, hgFemale_list[grep('path3624', names(hgFemale_list))])
 hgFemale_list[['fillFigure']] <-  do.call(rbind, hgFemale_list[grep('LAYER_OUTLINE', names(hgFemale_list))])
 hgFemale_list[['fillFigure']]$group <- 21
 #hgFemale_list[['fillFigure']] <- hgFemale_list[['fillFigure']][complete.cases(hgFemale_list[['fillFigure']]),]
@@ -275,7 +275,7 @@ hgMale_list[['human_male_outline']] <- hgMale_list[['human_male_outline']][compl
 
 
 
-#hgFemale_list <- hgFemale_list[!names(hgFemale_list) %in% c('path9', 'path3584', 'salivary_gland')] 
+#hgFemale_list <- hgFemale_list[!names(hgFemale_list) %in% c('path9', 'path3624', 'salivary_gland')]
 hgFemale_key <- data.frame(organ = unique(names(hgFemale_list)),
                     colour = "grey", stringsAsFactors = FALSE)
 
@@ -290,7 +290,7 @@ hgFemale_key[hgFemale_key$organ=='nasal_septum',]$type <- 'other'
 #hgFemale_key <- hgFemale_key[grep('gland', hgFemale_key$organ, invert=T),]
 hgFemale_key
 hgFemale_key$value <- runif(nrow(hgFemale_key), 0, 20)
-hgFemale_key <- hgFemale_key[!hgFemale_key$organ %in% c('path3584', 'path9'),]
+hgFemale_key <- hgFemale_key[!hgFemale_key$organ %in% c('path3624', 'path9'),]
 #gganatogram(data=hgFemale_key, outline = F, fillOutline='#a6bddb', organism='human', sex='female', fill="colour") +facet_wrap(~type, ncol=4) +theme_classic()
 
 #hgFemale_key %>%
@@ -309,24 +309,24 @@ hgFemale_key <- hgFemale_key[!hgFemale_key$organ %in% c('path3584', 'path9'),]
 #####
 #Mouse male
 #####
-mmMale <- read.table('mus_musculus.male_coords.tsv', sep='\t', stringsAsFactors=F)
+mmMale <- read.table('./data-raw/mus_musculus.male_coords.tsv', sep='\t', stringsAsFactors=F)
 mmMale_list <- list()
 for (i in 1:nrow(mmMale)) {
     df <- extractCoords(mmMale$V2[i], mmMale$V1[i],  mmMale$V3[i])
 
     mmMale_list[[i]] <- extractCoords(mmMale$V2[i], mmMale$V1[i],  mmMale$V3[i])
     mmMale_list[[i]]$id <- gsub(' ', '_', mmMale_list[[i]]$id)
-    
+
     names(mmMale_list)[i] <-  paste0(mmMale$V1[i],'-', i)
 }
 
- 
+
 names(mmMale_list) <- gsub('-.*', '', names(mmMale_list))
 names(mmMale_list) <- gsub(' ', '_', names(mmMale_list))
 
-mmMale_list[['seminal_vesicle']] <- mmMale_list[['seminal_vesicle']][mmMale_list[['seminal_vesicle']]$y >100,] 
+mmMale_list[['seminal_vesicle']] <- mmMale_list[['seminal_vesicle']][mmMale_list[['seminal_vesicle']]$y >100,]
 #for (i in 1:length(mmMale_list[grep('skin', names(mmMale_list))])) {
-#    mmMale_list[grep('skin', names(mmMale_list))][[i]]$group <- i 
+#    mmMale_list[grep('skin', names(mmMale_list))][[i]]$group <- i
 #}
 test <- mmMale_list[['lymph_node']]
 
@@ -357,7 +357,7 @@ mmMale_key <- mmMale_key[!mmMale_key$organ %in% c('UBERON_0000947', 'submandibul
 #Mouse female
 #####
 
-mmFemale <- read.table('mus_musculus.female_coords.tsv', sep='\t', stringsAsFactors=F, quote = "" )
+mmFemale <- read.table('./data-raw/mus_musculus.female_coords.tsv', sep='\t', stringsAsFactors=F, quote = "" )
 mmFemale[,1][mmFemale[,1] %in% 'title5002'] <- 'peripheral_nervous_system'
 mmFemale_list <- list()
 #mmFemale == ""
@@ -366,15 +366,15 @@ for (i in 1:nrow(mmFemale)) {
 
     mmFemale_list[[i]] <- extractCoords(mmFemale$V2[i], mmFemale$V1[i],  mmFemale$V3[i])
     mmFemale_list[[i]]$id <- gsub(' ', '_', mmFemale_list[[i]]$id)
-    
+
     names(mmFemale_list)[i] <-  paste0(mmFemale$V1[i],'-', i)
 }
 names(mmFemale_list) <- gsub('-.*', '', names(mmFemale_list))
 names(mmFemale_list) <- gsub(' ', '_', names(mmFemale_list))
 #names(mmFemale_list) <- gsub('title5002', 'peripheral_nervous_system', names(mmFemale_list) )
-#mmFemale_list[['seminal_vesicle']] <- mmFemale_list[['seminal_vesicle']][mmFemale_list[['seminal_vesicle']]$y >100,] 
+#mmFemale_list[['seminal_vesicle']] <- mmFemale_list[['seminal_vesicle']][mmFemale_list[['seminal_vesicle']]$y >100,]
 #for (i in 1:length(mmFemale_list[grep('skin', names(mmFemale_list))])) {
-#    mmFemale_list[grep('skin', names(mmFemale_list))][[i]]$group <- i 
+#    mmFemale_list[grep('skin', names(mmFemale_list))][[i]]$group <- i
 #}
 #test <- mmFemale_list[['lymph_node']]
 
@@ -405,22 +405,22 @@ mmMale_list[['urinary_bladder']]$group <- '100_2'
 
 
 
-library(devtools)
+library(usethis)
 library(roxygen2)
 
 #create("gganatogram")
 #hgMale_key <- allAnatomy
 #hgMale_key$value <- runif(46, 0, 20)
 hgFemale_key <- hgFemale_key[c(60:70,1:59),]
-devtools::use_data(pkg = "../gganatogram", hgMale_key, overwrite=TRUE)
-devtools::use_data(pkg = "../gganatogram", hgFemale_key, overwrite=TRUE)
-devtools::use_data(pkg = "../gganatogram", mmMale_key, overwrite=TRUE)
-devtools::use_data(pkg = "../gganatogram", mmFemale_key, overwrite=TRUE)
+use_data(hgMale_key, overwrite=TRUE)
+use_data(hgFemale_key, overwrite=TRUE)
+use_data(mmMale_key, overwrite=TRUE)
+use_data(mmFemale_key, overwrite=TRUE)
 #hgMale_list <- humanList
-devtools::use_data(pkg = "../gganatogram", hgMale_list, overwrite= TRUE)
-devtools::use_data(pkg = "../gganatogram", hgFemale_list, overwrite= TRUE)
-devtools::use_data(pkg = "../gganatogram", mmMale_list, overwrite=TRUE)
-devtools::use_data(pkg = "../gganatogram", mmFemale_list, overwrite=TRUE)
+use_data(hgMale_list, overwrite= TRUE)
+use_data(hgFemale_list, overwrite= TRUE)
+use_data(mmMale_list, overwrite=TRUE)
+use_data(mmFemale_list, overwrite=TRUE)
 
 
 document('../gganatogram')
@@ -450,7 +450,7 @@ hgMale_key %>%
     dplyr::filter(type =='other') %>%
     dplyr::filter(!organ =='path9') %>%
     mutate(type = organ) %>%
-    gganatogram( outline=T, fillOutline='#a6bddb', organism='human', sex='male', fill="colour")  +theme_classic()+ facet_wrap(~type) 
+    gganatogram( outline=T, fillOutline='#a6bddb', organism='human', sex='male', fill="colour")  +theme_classic()+ facet_wrap(~type)
 
 hgFemale_key %>%
     dplyr::filter(type =='reproductive') %>%
